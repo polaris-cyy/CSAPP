@@ -1,0 +1,308 @@
+## Data Lab
+
+---
+
+第一个lab果然是挺简单的啊
+
+注意不能使用给定以外的op(=除外)，floating前不能使用大于0xff的常数和条件判断，不能使用循环
+
+---
+
+1. 查一下对称差运算就好了
+
+```C
+//1
+/* 
+ * bitXor - x^y using only ~ and & 
+ *   Example: bitXor(4, 5) = 1
+ *   Legal ops: ~ &
+ *   Max ops: 14
+ *   Rating: 1
+ */
+int bitXor(int x, int y) {
+  return ~(~(x & ~y) & ~(~x & y));
+}
+```
+
+2. TMin的定义，送分题
+
+```C
+/* 
+ * tmin - return minimum two's complement integer 
+ *   Legal ops: ! ~ & ^ | + << >>
+ *   Max ops: 4
+ *   Rating: 1
+ */
+int tmin(void) {
+  return 1 << 31;
+}
+```
+
+3. 我觉得自己写麻烦了，真的。我非常喜欢用异或的对合性，但是这题可能没有这么麻烦。
+
+```C
+/*
+ * isTmax - returns 1 if x is the maximum, two's complement number,
+ *     and 0 otherwise 
+ *   Legal ops: ! ~ & ^ | +
+ *   Max ops: 10
+ *   Rating: 1
+ */
+int isTmax(int x) {
+  return !(x^((1<<31>>31 ^ 1 << 31)));
+}
+```
+
+4. 就是说呢，咱根本不需要考虑偶数位，所以最后不用>>1
+
+```C
+/* 
+ * allOddBits - return 1 if all odd-numbered bits in word set to 1
+ *   where bits are numbered from 0 (least significant) to 31 (most significant)
+ *   Examples allOddBits(0xFFFFFFFD) = 0, allOddBits(0xAAAAAAAA) = 1
+ *   Legal ops: ! ~ & ^ | + << >>
+ *   Max ops: 12
+ *   Rating: 2
+ */
+int allOddBits(int x) {
+	x = x & (x >> 16);
+	x = x & (x >> 8 );
+	x = x & (x >> 4 );
+	x = x & (x >> 2 );
+	return !(x & 0xA ^ 0xA);
+}
+```
+
+5. 定义题
+
+```C
+/* 
+ * negate - return -x 
+ *   Example: negate(1) = -1.
+ *   Legal ops: ! ~ & ^ | + << >>
+ *   Max ops: 5
+ *   Rating: 2
+ */
+int negate(int x) {
+  return ~x+1;
+}
+```
+
+6. 要做的是判断x是否在给定区间内，即x-left与right-x的符号都为正即可。这里的溢出不会影响结果，所以不需要判断。
+
+- 减法用+(~x+1)代替
+
+```C
+/* 
+ * isAsciiDigit - return 1 if 0x30 <= x <= 0x39 (ASCII codes for characters '0' to '9')
+ *   Example: isAsciiDigit(0x35) = 1.
+ *            isAsciiDigit(0x3a) = 0.
+ *            isAsciiDigit(0x05) = 0.
+ *   Legal ops: !  & ^ | + << >>
+ *   Max ops: 15
+ *   Rating: 3
+ */
+int isAsciiDigit(int x) {
+	int a = x + (~0x30 + 1);
+	int b = 0x39 + (~x + 1);
+	int c = 1 << 31;
+	return !(c & a) & !(c & b);
+}
+```
+
+7. x为0当且仅当!x=1，然后试图构造全1和全0两种情况来取y和z
+
+```C
+/* 
+ * conditional - same as x ? y : z 
+ *   Example: conditional(2,4,5) = 4
+ *   Legal ops: ! ~ & ^ | + << >>
+ *   Max ops: 16
+ *   Rating: 3
+ */
+int conditional(int x, int y, int z) {
+	int k = !x << 31 >> 31;
+       	return (k & z) | (~k & y);
+}
+```
+
+8. 感觉写麻烦了，运算数量刚好，但肯定可以简化
+
+- 用减法判断大小
+
+- sign1和sign3用来判断计算溢出，sign1是负溢出
+- sign2判断运算符号
+
+```C
+/* 
+ * isLessOrEqual - if x <= y  then return 1, else return 0 
+ *   Example: isLessOrEqual(4,5) = 1.
+ *   Legal ops: ! ~ & ^ | + << >>
+ *   Max ops: 24
+ *   Rating: 3
+ */
+int isLessOrEqual(int x, int y) {
+	int sign1 = ( x >> 31 & 0x1) & ( y >> 31 ^ 0x1 );
+	int sign2 =( (x + ~y + 1) >> 31) & 0x1;
+	int sign3 =( x >> 31 ^ 0x1) & ( y >> 31 & 0x1);
+	return !(x^y) | (!sign3 & (sign1 | (!sign1 & sign2)));
+}
+```
+
+9. 这个题卡了一会儿
+
+- 原先的思路是判断是否每一位都是0，用二分，最后发现要13个op
+- 这里考虑的是：只有0和TMin的取反+1后符号位不变，然后排除TMin即可
+
+```C
+//4
+/* 
+ * logicalNeg - implement the ! operator, using all of 
+ *              the legal operators except !
+ *   Examples: logicalNeg(3) = 0, logicalNeg(0) = 1
+ *   Legal ops: ~ & ^ | + << >>
+ *   Max ops: 12
+ *   Rating: 4 
+ */
+int logicalNeg(int x) {
+	int y = x ^ ( ~x + 1);
+	int z = 1 << 31 >> 31;
+	return ((y >> 31 & 0x1) ^ 0x1) & (x >> 31 ^ z); 
+}
+```
+
+10. 注意到负数的表示范围和0与正数的表示范围是相同的，所以转成相反数-1就行了。计算过程每次判断一半区域内是否有非0位。
+
+```C
+/* howManyBits - return the minimum number of bits required to represent x in
+ *             two's complement
+ *  Examples: howManyBits(12) = 5
+ *            howManyBits(298) = 10
+ *            howManyBits(-5) = 4
+ *            howManyBits(0)  = 1
+ *            howManyBits(-1) = 1
+ *            howManyBits(0x80000000) = 32
+ *  Legal ops: ! ~ & ^ | + << >>
+ *  Max ops: 90
+ *  Rating: 4
+ */
+int howManyBits(int x) {
+	int sign = x >> 31;
+	x = x ^ sign;
+	int b16 = !!(x >> 16) << 4;
+	x = x >> b16;
+	int b8  = !!(x >> 8 ) << 3;
+	x = x >> b8;
+	int b4  = !!(x >> 4 ) << 2;
+	x = x >> b4;
+	int b2  = !!(x >> 2 ) << 1;
+	x = x >> b2;
+	int b1  = !!(x >> 1 );
+	x = x >> b1;
+	return b16+b8+b4+b2+b1+x+1;
+}
+```
+
+11. 这个题家庭作业不是有吗...
+
+```C
+//float
+/* 
+ * floatScale2 - Return bit-level equivalent of expression 2*f for
+ *   floating point argument f.
+ *   Both the argument and result are passed as unsigned int's, but
+ *   they are to be interpreted as the bit-level representation of
+ *   single-precision floating point values.
+ *   When argument is NaN, return argument
+ *   Legal ops: Any integer/unsigned operations incl. ||, &&. also if, while
+ *   Max ops: 30
+ *   Rating: 4
+ */
+unsigned floatScale2(unsigned uf) {
+	unsigned sign = uf >> 31;
+	unsigned exp = (uf >> 23) & 0xff;
+	unsigned frac = uf & 0x7fffff;
+	if(exp == 0){
+		frac = frac << 1;
+	}else if(exp == 0xfe){
+		exp = 0xff;
+		frac = 0;
+	}else if(exp == 0xff){
+		return uf;
+	}else{
+		exp++;
+	}
+	return (sign << 31) | (exp << 23) | frac;
+}
+```
+
+12. 这个题家庭作业上不也有吗...
+
+```C
+/* 
+ * floatFloat2Int - Return bit-level equivalent of expression (int) f
+ *   for floating point argument f.
+ *   Argument is passed as unsigned int, but
+ *   it is to be interpreted as the bit-level representation of a
+ *   single-precision floating point value.
+ *   Anything out of range (including NaN and infinity) should return
+ *   0x80000000u.
+ *   Legal ops: Any integer/unsigned operations incl. ||, &&. also if, while
+ *   Max ops: 30
+ *   Rating: 4
+ */
+int floatFloat2Int(unsigned uf) {
+	int sign = (uf >> 31) ? -1 : 1;
+	unsigned exp = (uf >> 23) & 0xff;
+	unsigned frac = uf & 0x7fffff;
+	int E = exp - 127;
+	if(E > 31){
+		return 0x80000000u;
+	}else if(E < 0){
+		return 0;
+	}else{
+		frac = frac | (1 << 23);
+		if(E > 23){
+			frac = frac << (E -23);
+		}else{
+			frac = frac >> (23 - E);
+		}
+	}
+	return sign * frac;
+}
+```
+
+13. 看起来很吓人的一道题，实际上非常简单。只要转化乘1.0*2<sup>x</sup>，然后判断是否过大过小、是否为denormal number就行了
+
+```C
+/* 
+ * floatPower2 - Return bit-level equivalent of the expression 2.0^x
+ *   (2.0 raised to the power x) for any 32-bit integer x.
+ *
+ *   The unsigned value that is returned should have the identical bit
+ *   representation as the single-precision floating-point number 2.0^x.
+ *   If the result is too small to be represented as a denorm, return
+ *   0. If too large, return +INF.
+ * 
+ *   Legal ops: Any integer/unsigned operations incl. ||, &&. Also if, while 
+ *   Max ops: 30 
+ *   Rating: 4
+ */
+unsigned floatPower2(int x) {
+    int e = x + 127;
+    if(e >= 255)
+	    return 0x7f800000;
+    if(e <= -23)
+	    return 0;
+    if(e <= 0 && e > -23)
+	    return 1 <<(22 + e);
+    return e << 23;
+}
+```
+
+---
+
+第一个lab真的很简单！
+
+---
+
