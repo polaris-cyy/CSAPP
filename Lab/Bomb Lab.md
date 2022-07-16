@@ -403,4 +403,4 @@ int main(){
 
 <span id = "总结">[总结](#index)</span>: 学到了gdb的使用，增强了汇编代码的阅读能力，觉得是值得的，确实很有意思。
 
-![image-20220716173047152](C:\Users\86139\AppData\Roaming\Typora\typora-user-images\image-20220716173047152.png![image-20220716173141279](C:\Users\86139\Desktop\image-20220716173141279.png)
+![image-20220716173141279](https://github.com/polaris-cyy/CSAPP/blob/main/picture/image-20220716173141279.png)
