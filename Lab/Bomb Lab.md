@@ -57,7 +57,7 @@
 
 ​		我们使用x/s 0x402400看一下该位置的字符串, 显示为"Border relations with Canada have never been better."。输入后进入phase_2，猜测正确。
 
-![image-20220716173424534](C:\Users\86139\AppData\Roaming\Typora\typora-user-images\image-20220716173424534.png)
+![image-20220716173424534](https://github.com/polaris-cyy/CSAPP/blob/main/picture/image-20220716173424534.png)
 
 ---
 
@@ -72,7 +72,7 @@
 - +18出现第一个条件跳转，说明输入的第1个数必须为1，否则explode
 - 分析可知，之后每个数是上一个数的2倍，可得答案
 
-![image-20220716174242564](C:\Users\86139\AppData\Roaming\Typora\typora-user-images\image-20220716174242564.png)
+![image-20220716174242564](https://github.com/polaris-cyy/CSAPP/blob/main/picture/image-20220716174242564.png)
 
 ---
 
@@ -87,7 +87,7 @@
 - 然后进入跳转表，可以在explode处设一个断点，随便输入两个数，rax会获得跳转表中相应的值，第二次再做更改即可。
 - 答案不唯一，有7组解。
 
-![image-20220716175556710](C:\Users\86139\AppData\Roaming\Typora\typora-user-images\image-20220716175556710.png)
+![image-20220716175556710](https://github.com/polaris-cyy/CSAPP/blob/main/picture/image-20220716175556710.png)
 
 ---
 
@@ -175,7 +175,7 @@ int main(){
 
   > 简单来说，我们要输入6个字符c1-6，&0xf后得index1-6，然后使0x4024b0(index) == 0x40245e(index)即可。这两个string可以通过x/s查看。
 
-![image-20220716181626620](C:\Users\86139\AppData\Roaming\Typora\typora-user-images\image-20220716181626620.png)
+![image-20220716181626620](https://github.com/polaris-cyy/CSAPP/blob/main/picture/image-20220716181626620.png)
 
 ---
 
@@ -325,7 +325,7 @@ int main(){
 >
 > - x/24 0x6032d0, 可以看到好像是一个链表
 >
->   ![image-20220716131239028](C:\Users\86139\AppData\Roaming\Typora\typora-user-images\image-20220716131239028.png)
+>   ![image-20220716131239028](https://github.com/polaris-cyy/CSAPP/blob/main/picture/image-20220716131239028.png)
 >
 >   > struct node{
 >   >
@@ -373,7 +373,7 @@ int main(){
 
 ​	That's not the end. 如果之前使用过objdump, 会发现其中还有一个secret_phase, 函数入口在phase_defused中. 反汇编phase_defused函数, 如下图
 
-​	![image-20220716151240688](C:\Users\86139\AppData\Roaming\Typora\typora-user-images\image-20220716151240688.png)
+​	![image-20220716151240688](https://github.com/polaris-cyy/CSAPP/blob/main/picture/image-20220716151240688.png)
 
 ​		注意到secret_phase在+108, 而+27会跳转到+123. 调试知, num_input_strings返回已完成的phase的个数, 即仅当完成前6个phase, 才可以进入secret_phase. 
 
@@ -381,7 +381,7 @@ int main(){
 
 ​		下面的0x4024f8和0x402520是进入phase的消息提示, 而非有效信息. 
 
-![image-20220716153654165](C:\Users\86139\AppData\Roaming\Typora\typora-user-images\image-20220716153654165.png)
+![image-20220716153654165](https://github.com/polaris-cyy/CSAPP/blob/main/picture/image-20220716153654165.png)
 
 <span id = "i7">**思路**</span>(上为secret_phase)
 
@@ -389,7 +389,7 @@ int main(){
 >
 > +30, 输入的数≤1001, 之后进入fun7(rdi, rsi)
 >
-> ![image-20220716161654102](C:\Users\86139\AppData\Roaming\Typora\typora-user-images\image-20220716161654102.png)
+> ![image-20220716161654102](https://github.com/polaris-cyy/CSAPP/blob/main/picture/image-20220716161654102.png)
 >
 > ​		fun7需要用到secret_phase中rdi的值0x6030f0, 如下图所示。看着很吓人，观察指针发现其实很友好，是一棵完全二叉树(而且是BST)，需要自己画一下。
 >
@@ -397,7 +397,7 @@ int main(){
 >
 > ​		由于phase要求eax = 2, 因此应该为left-right-equal，即n32的值22
 >
-> ![image-20220716165029188](C:\Users\86139\AppData\Roaming\Typora\typora-user-images\image-20220716165029188.png)
+> ![image-20220716165029188](https://github.com/polaris-cyy/CSAPP/blob/main/picture/image-20220716165029188.png)
 
 ---
 
